@@ -1,6 +1,6 @@
 {
   "name": "co-ware",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Ware inspired, easily create your own middleware layer using generators via co.",
   "main": "index.js",
   "scripts": {
