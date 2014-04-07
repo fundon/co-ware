@@ -85,6 +85,7 @@ w.run = function () {
   var fn = co(gen);
   var ctx = Object.create(this.context);
   ctx.input = args;
+  ctx.output = Object.create(null);
   ctx.onerror = function (err) {
     if (!err) return;
     self.emit('error', err);
