@@ -10,8 +10,6 @@
   "license": "MIT",
   "dependencies": {
     "co": "^3.0.4",
-    "koa-compose": "^2.2.0",
-    "finished": "^1.1.1",
     "debug": "^0.7.4"
   }
 }
