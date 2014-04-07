@@ -10,7 +10,7 @@ var compose = require('koa-compose');
 var co = require('co');
 
 /**
- * slice() reference.
+ *  slice() reference.
  */
 
 var slice = Array.prototype.slice;
@@ -44,7 +44,7 @@ function Ware () {
 
 
 /**
- * Inherit from `Emitter.prototype`.
+ *  Inherit from `Emitter.prototype`.
  */
 
 Ware.prototype.__proto__ = Emitter.prototype;
@@ -67,7 +67,7 @@ w.use = function (fn) {
  *  Run through the middleware with the given `args` and optional `callback`.
  *
  *  @param {Mixed} args...
- *  @param {Function} callback (optional)
+ *  @param {GeneratorFunction} callback (optional)
  *  @return {Ware}
  *  @api public
  */
@@ -94,10 +94,10 @@ w.run = function () {
 };
 
 /**
- * Default error handler.
+ *  Default error handler.
  *
- * @param {Error} err
- * @api private
+ *  @param {Error} err
+ *  @api private
  */
 
 w.onerror = function(err){
