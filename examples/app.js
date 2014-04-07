@@ -1,17 +1,18 @@
 var ware = require('..');
 
-var middleware = ware()
+var w = ware()
   .use(function *(next) {
-    //if ('42' != obj.value) return next(new Error());
+    this.x = 'hello';
     yield next;
-    console.log(this.i);
   })
   .use(function *(next) {
-    console.log('yes!');
+    this.y = 'world';
+    yield next;
   })
   .use(function *(next) {
-    console.log('no!');
+    yield next;
   });
 
-middleware.run({ life: '41' }); // "no!"
-middleware.run({ life: '42' }); // "yes!"
+w.run({a:1}, {b:2}, function *() {
+  console.log(this.x, this.y);
+});
