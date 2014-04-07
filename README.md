@@ -1,4 +1,4 @@
-# co-ware
+# co-ware [![Build Status](https://travis-ci.org/fundon/co-ware.svg)](https://travis-ci.org/fundon/co-ware)
   [Ware][] inspired, easily create your own middleware layer using generators via [co][].
 
 
