@@ -74,7 +74,6 @@ w.use = function (fn) {
 
 w.run = function () {
   debug('run');
-  var self = this;
   var mw = [].concat(this.fns);
   var args = slice.call(arguments);
   var last = args[args.length - 1];
@@ -83,15 +82,28 @@ w.run = function () {
   mw.push(callback || noop);
   var gen = compose(mw);
   var fn = co(gen);
-  var ctx = Object.create(this.context);
-  ctx.input = args;
+  var ctx = this.createContext(args, this);
+  fn.call(ctx, ctx.onerror);
+  return this;
+};
+
+/**
+ *  Create a context.
+ *
+ *  @param {Mixed} input
+ *  @return {Object} ctx
+ *  @api private
+ */
+
+w.createContext = function (input, self, ctx) {
+  ctx = Object.create(this.context);
+  ctx.input = input;
   ctx.output = Object.create(null);
   ctx.onerror = function (err) {
     if (!err) return;
     self.emit('error', err);
   };
-  fn.call(ctx, ctx.onerror);
-  return this;
+  return ctx;
 };
 
 /**
