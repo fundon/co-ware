@@ -71,6 +71,10 @@ w.run({ life: '42' }); // "yes!"
 
   Runs the middleware functions with input... and optionally calls callback.
 
+#### .clear()
+
+  Clear the middleware.
+
 ### License
 
 MIT

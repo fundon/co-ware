@@ -88,6 +88,18 @@ w.run = function () {
 };
 
 /**
+ *  Clear the midleware.
+ *
+ *  @return {Object} self
+ *  @api public
+ */
+
+w.clear = function () {
+  this.fns.length = 0;
+  return this;
+};
+
+/**
  *  Create a context.
  *
  *  @param {Mixed} input
