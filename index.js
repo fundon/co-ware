@@ -35,7 +35,6 @@ exports = module.exports = Ware;
 
 function Ware () {
   if (!(this instanceof Ware)) return new Ware;
-  this.env = process.env.NODE_ENV || 'development';
   this.outputErrors = 'test' != this.env;
   this.on('error', this.onerror);
   this.fns = [];
