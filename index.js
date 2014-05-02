@@ -8,11 +8,6 @@ var debug = require('debug')('ware');
 var Emitter = require('events').EventEmitter;
 var compose = require('koa-compose');
 var co = require('co');
-
-/**
- *  slice() reference.
- */
-
 var slice = Array.prototype.slice;
 
 /**
@@ -22,7 +17,7 @@ var slice = Array.prototype.slice;
 var w = Ware.prototype;
 
 /**
- *  Expose `Ware`.
+ *  Expose Ware.
  */
 
 exports = module.exports = Ware;
@@ -33,9 +28,9 @@ exports = module.exports = Ware;
  *  @api public
  */
 
-function Ware () {
-  if (!(this instanceof Ware)) return new Ware;
-  this.outputErrors = 'test' != this.env;
+function Ware() {
+  if (!(this instanceof Ware)) return new Ware();
+  this.outputErrors = 'test' !== this.env;
   this.on('error', this.onerror);
   this.fns = [];
   this.context = Object.create(null);
@@ -81,7 +76,7 @@ w.run = function () {
   mw.push(callback || noop);
   var gen = compose(mw);
   var fn = co(gen);
-  var ctx = this.createContext(args, this);
+  var ctx = this.createContext(args, Object.create(null), this);
   fn.call(ctx, ctx.onerror);
   return this;
 };
@@ -106,10 +101,10 @@ w.clear = function () {
  *  @api private
  */
 
-w.createContext = function (input, self, ctx) {
-  ctx = Object.create(this.context);
+w.createContext = function (input, output, self) {
+  var ctx = Object.create(self.context);
   ctx.input = input;
-  ctx.output = Object.create(null);
+  ctx.output = output;
   ctx.onerror = function (err) {
     if (!err) return;
     self.emit('error', err);
