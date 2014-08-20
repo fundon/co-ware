@@ -30,7 +30,6 @@ exports = module.exports = Ware;
 
 function Ware() {
   if (!(this instanceof Ware)) return new Ware();
-  this.outputErrors = 'test' !== this.env;
   this.on('error', this.onerror);
   this.fns = [];
   this.context = Object.create(null);
@@ -107,6 +106,7 @@ w.createContext = function (input, output, self) {
   ctx.output = output;
   ctx.onerror = function (err) {
     if (!err) return;
+    self.removeListener('error', self.onerror);
     self.emit('error', err);
   };
   return ctx;
@@ -120,7 +120,7 @@ w.createContext = function (input, output, self) {
  */
 
 w.onerror = function(err){
-  if (!this.outputErrors) return;
+  if (this.listeners('error').length) return;
   console.error(err.stack);
 };
 
