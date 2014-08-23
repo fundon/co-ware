@@ -29,10 +29,20 @@ describe('ware', function () {
         .run();
     });
 
-    it('should receive initial arguments', function (done) {
+    it('should receive initial arguments, if callback is generator function', function (done) {
       ware()
         .use(function *(next) { yield next; })
-        .run('req', 'res', function *() {
+        .run('req', 'res', function *(err, res) {
+          assert('req' == this.input[0]);
+          assert('res' == this.input[1]);
+          done();
+        });
+    });
+
+    it('should receive initial arguments, if callback is normal function', function (done) {
+      ware()
+        .use(function *(next) { yield next; })
+        .run('req', 'res', function (err, res) {
           assert('req' == this.input[0]);
           assert('res' == this.input[1]);
           done();
@@ -101,6 +111,23 @@ describe('ware', function () {
           done();
         })
         .run();
+    });
+
+    it('should not call error middleware on error', function (done) {
+      var errors = 0;
+      ware()
+        .use(function *(next) { throw new Error(); })
+        .use(function *(next) { errors++; yield next; })
+        .use(function *(next) { errors++; yield next; })
+        .on('error', function (err) {
+          assert(err);
+          assert(2 != errors);
+        })
+        .run(function (err) {
+          assert(err);
+          assert(2 != errors);
+          done();
+        });
     });
 
     it('should not require a callback', function (done) {

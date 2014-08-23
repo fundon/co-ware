@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- *  Module dependencies.
+ * Module dependencies.
  */
 
 var debug = require('debug')('ware');
@@ -11,21 +11,21 @@ var co = require('co');
 var slice = Array.prototype.slice;
 
 /**
- *  Ware prototype.
+ * Ware prototype.
  */
 
 var w = Ware.prototype;
 
 /**
- *  Expose Ware.
+ * Expose Ware.
  */
 
 exports = module.exports = Ware;
 
 /**
- *  Initialize a new `Ware` manager.
+ * Initialize a new `Ware` manager.
  *
- *  @api public
+ * @api public
  */
 
 function Ware() {
@@ -37,17 +37,17 @@ function Ware() {
 
 
 /**
- *  Inherit from `Emitter.prototype`.
+ * Inherit from `Emitter.prototype`.
  */
 
 Ware.prototype.__proto__ = Emitter.prototype;
 
 /**
- *  Use the given middleware `fn`.
+ * Use the given middleware `fn`.
  *
- *  @param {GeneratorFunction} fn
- *  @return {Ware} self
- *  @api public
+ * @param {GeneratorFunction} fn
+ * @return {Ware} self
+ * @api public
  */
 
 w.use = function (fn) {
@@ -57,12 +57,12 @@ w.use = function (fn) {
 };
 
 /**
- *  Run through the middleware with the given `args` and optional `callback`.
+ * Run through the middleware with the given `args` and optional `callback`.
  *
- *  @param {Mixed} args...
- *  @param {GeneratorFunction} callback (optional)
- *  @return {Ware}
- *  @api public
+ * @param {Mixed} args...
+ * @param {GeneratorFunction|Function} callback (optional)
+ * @return {Ware}
+ * @api public
  */
 
 w.run = function () {
@@ -71,20 +71,32 @@ w.run = function () {
   var args = slice.call(arguments);
   var last = args[args.length - 1];
   var callback = 'function' === typeof last ? last : null;
-  if (callback) args.pop();
-  mw.push(callback || noop);
+  var isGen = false;
+  if (callback) {
+    args.pop();
+    isGen = isGeneratorFunction(callback);
+    if (isGen) {
+      mw.push(callback || noop);
+    }
+  }
   var gen = compose(mw);
   var fn = co(gen);
   var ctx = this.createContext(args, Object.create(null), this);
-  fn.call(ctx, ctx.onerror);
+  function done(err, res) {
+    if (!isGen) {
+      (callback || noop).call(ctx, err, res);
+    }
+    return ctx.onerror(err);
+  }
+  fn.call(ctx, done);
   return this;
 };
 
 /**
- *  Clear the midleware.
+ * Clear the midleware.
  *
- *  @return {Object} self
- *  @api public
+ * @return {Object} self
+ * @api public
  */
 
 w.clear = function () {
@@ -93,11 +105,11 @@ w.clear = function () {
 };
 
 /**
- *  Create a context.
+ * Create a context.
  *
- *  @param {Mixed} input
- *  @return {Object} ctx
- *  @api private
+ * @param {Mixed} input
+ * @return {Object} ctx
+ * @api private
  */
 
 w.createContext = function (input, output, self) {
@@ -113,21 +125,33 @@ w.createContext = function (input, output, self) {
 };
 
 /**
- *  Default error handler.
+ * Default error handler.
  *
- *  @param {Error} err
- *  @api private
+ * @param {Error} err
+ * @api private
  */
 
-w.onerror = function(err){
+w.onerror = function (err){
   if (this.listeners('error').length) return;
   console.error(err.stack);
 };
 
 /**
- *  Noop.
+ * Noop.
  *
- *  @api private
+ * @api private
  */
 
-function *noop() {}
+function noop() {}
+
+/**
+ * Check if `obj` is a generator function.
+ *
+ * @param {Mixed} obj
+ * @return {Boolean}
+ * @api private
+ */
+
+function isGeneratorFunction(obj) {
+  return obj && obj.constructor && 'GeneratorFunction' == obj.constructor.name;
+}
