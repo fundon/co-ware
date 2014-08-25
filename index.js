@@ -76,7 +76,7 @@ w.run = function () {
     args.pop();
     isGen = isGeneratorFunction(callback);
     if (isGen) {
-      mw.push(callback || noop);
+      mw.push(callback);
     }
   }
   var gen = compose(mw);
