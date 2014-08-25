@@ -72,7 +72,7 @@ w.run = function () {
   var last = args[args.length - 1];
   var callback = 'function' === typeof last ? last : null;
   var isGen = false;
-  if (callback && isGeneratorFunction(callback)) {
+  if (callback && (isGen = isGeneratorFunction(callback))) {
     args.pop();
     mw.push(callback);
   }
