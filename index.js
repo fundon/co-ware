@@ -72,12 +72,9 @@ w.run = function () {
   var last = args[args.length - 1];
   var callback = 'function' === typeof last ? last : null;
   var isGen = false;
-  if (callback) {
+  if (callback && isGeneratorFunction(callback)) {
     args.pop();
-    isGen = isGeneratorFunction(callback);
-    if (isGen) {
-      mw.push(callback);
-    }
+    mw.push(callback);
   }
   var gen = compose(mw);
   var fn = co(gen);
