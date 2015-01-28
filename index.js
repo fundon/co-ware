@@ -4,6 +4,7 @@
  * Module dependencies.
  */
 
+var assert = require('assert');
 var debug = require('debug')('ware');
 var Emitter = require('events').EventEmitter;
 var compose = require('koa-compose');
@@ -29,9 +30,9 @@ exports = module.exports = Ware;
  */
 
 function Ware() {
-  if (!(this instanceof Ware)) return new Ware();
+  if (!(this instanceof Ware)) return new Ware;
   this.on('error', this.onerror);
-  this.fns = [];
+  this.middleware = [];
   this.context = Object.create(null);
 }
 
@@ -51,42 +52,37 @@ Ware.prototype.__proto__ = Emitter.prototype;
  */
 
 w.use = function (fn) {
+  assert(fn && 'GeneratorFunction' == fn.constructor.name,
+    'ware.use() requires a generator function');
   debug('use %s', fn._name || fn.name || '-');
-  this.fns.push(fn);
+  this.middleware.push(fn);
   return this;
 };
 
 /**
- * Run through the middleware with the given `args` and optional `callback`.
+ * Run through the middleware with the given `args`
+ * and optional `callback`.
  *
  * @param {Mixed} args...
- * @param {GeneratorFunction|Function} callback (optional)
- * @return {Ware}
+ * @param {GeneratorFunction} callback (optional)
+ * @return {Mixed}
  * @api public
  */
 
 w.run = function () {
   debug('run');
-  var mw = [].concat(this.fns);
+  var mw = [].concat(this.middleware);
   var args = slice.call(arguments);
   var last = args[args.length - 1];
   var callback = 'function' === typeof last ? last : null;
-  var isGen = false;
-  if (callback && (isGen = isGeneratorFunction(callback))) {
+  if (callback) {
     args.pop();
     mw.push(callback);
   }
   var gen = compose(mw);
-  var fn = co(gen);
+  var fn = co.wrap(gen);
   var ctx = this.createContext(args, Object.create(null), this);
-  function done(err, res) {
-    if (!isGen) {
-      (callback || noop).call(ctx, err, res);
-    }
-    return ctx.onerror(err);
-  }
-  fn.call(ctx, done);
-  return this;
+  return fn.call(ctx).catch(ctx.onerror);
 };
 
 /**
@@ -97,7 +93,7 @@ w.run = function () {
  */
 
 w.clear = function () {
-  this.fns.length = 0;
+  this.middleware.length = 0;
   return this;
 };
 
@@ -129,26 +125,10 @@ w.createContext = function (input, output, self) {
  */
 
 w.onerror = function (err){
+  assert(err instanceof Error, 'non-error thrown: ' + err);
   if (this.listeners('error').length) return;
-  console.error(err.stack);
+  var msg = err.stack || err.toString();
+  console.error();
+  console.error(msg.replace(/^/gm, '  '));
+  console.error();
 };
-
-/**
- * Noop.
- *
- * @api private
- */
-
-function noop() {}
-
-/**
- * Check if `obj` is a generator function.
- *
- * @param {Mixed} obj
- * @return {Boolean}
- * @api private
- */
-
-function isGeneratorFunction(obj) {
-  return obj && obj.constructor && 'GeneratorFunction' == obj.constructor.name;
-}

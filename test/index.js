@@ -1,9 +1,9 @@
+var assert = require('assert');
+var noop = function *(){};
+var ware = require('..');
+var co = require('co');
 
 describe('ware', function () {
-
-  var assert = require('assert');
-  var noop = function *(){};
-  var ware = require('..');
 
   describe('#use', function () {
     it('should be chainable', function () {
@@ -11,9 +11,9 @@ describe('ware', function () {
       assert(w.use(noop) == w);
     });
 
-    it('should add a middleware to fns', function () {
+    it('should add a GeneratorFunction to middleware', function () {
       var w = ware().use(noop);
-      assert(1 == w.fns.length);
+      assert(1 == w.middleware.length);
     });
   });
 
@@ -33,16 +33,6 @@ describe('ware', function () {
       ware()
         .use(function *(next) { yield next; })
         .run('req', 'res', function *(err, res) {
-          assert('req' == this.input[0]);
-          assert('res' == this.input[1]);
-          done();
-        });
-    });
-
-    it('should receive initial arguments, if callback is normal function', function (done) {
-      ware()
-        .use(function *(next) { yield next; })
-        .run('req', 'res', function (err, res) {
           assert('req' == this.input[0]);
           assert('res' == this.input[1]);
           done();
@@ -135,6 +125,14 @@ describe('ware', function () {
         .use(function *(next) { yield next; })
         .use(function *(next) { done(); })
         .run('obj');
+    });
+
+    it('should be return a promise', function () {
+      return ware()
+        .use(function *() {})
+        .run('obj')
+        .then(function () {
+        });
     });
   });
 });

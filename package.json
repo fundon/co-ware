@@ -1,11 +1,12 @@
 {
   "name": "co-ware",
-  "version": "1.5.3",
+  "version": "1.6.0",
   "description": "Ware inspired, easily create your own middleware layer using generators via co.",
   "main": "index.js",
   "scripts": {
     "test": "make test"
   },
+  "repository": "fundon/co-ware.git",
   "author": "fundon <cfddream@gmail.com>",
   "license": "MIT",
   "keywords": [
@@ -16,19 +17,12 @@
     "middleware"
   ],
   "dependencies": {
-    "co": "^3.1.0",
-    "debug": "^0.7.4",
+    "co": "^4.1.0",
+    "debug": "^2.1.1",
     "koa-compose": "^2.3.0"
   },
   "devDependencies": {
-    "mocha": "^1.21.4",
-    "should": "^3.3.2"
-  },
-  "repository": {
-    "type": "git",
-    "url": "http://github.com/fundon/co-ware.git"
-  },
-  "bugs": {
-    "url": "https://github.com/fundon/co-ware/issues"
+    "mocha": "^2.1.0",
+    "should": "^4.6.2"
   }
 }

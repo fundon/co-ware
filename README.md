@@ -67,9 +67,9 @@ w.run({ life: '42' }); // "yes!"
 
   Push a middleware fn(__GeneratorFunction__) onto the list. If the middleware has an arity of one more than the input to run it's an error middleware.
 
-#### .run(input..., [*callback|callback])
+#### .run(input..., [__GeneratorFunction__])
 
-  Runs the middleware functions with input... and optionally calls callback(__GeneratorFunction__ or __Function__).
+  Runs the middleware functions with input... and optionally calls callback(__GeneratorFunction__).
 
 #### .clear()
 
